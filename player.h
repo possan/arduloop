@@ -1,7 +1,8 @@
 #ifndef _PLAYER_H_
 #define _PLAYER_H_
 
-extern volatile unsigned long player_substepinterval;
+extern volatile unsigned long player_substepinterval1;
+extern volatile unsigned long player_substepinterval2;
 extern volatile unsigned long player_substep;
 extern volatile int player_step;
 extern volatile int player_pattern;

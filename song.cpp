@@ -8,6 +8,7 @@ struct SONG *_song = &song;
 
 void clearSong() {
   song.tempo = 120;
+  song.shuffle = 0;
 
   for(int j=0; j<MAX_PATTERNS; j++) {
     struct PATTERN *pat = (struct PATTERN *)&song.patterns[j];

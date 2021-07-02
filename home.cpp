@@ -35,7 +35,7 @@ void home_input(int button, int repeat) {
       player_playing = 0;
     } else {
       player_step = 15;
-      player_substep = player_substepinterval - 1;
+      player_substep = player_substepinterval1 - 1;
       player_playing = 1;
     }
   }

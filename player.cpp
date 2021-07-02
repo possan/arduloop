@@ -4,7 +4,8 @@
 #include "pins_arduino.h" // Arduino pre-1.0 needs this
 
 volatile unsigned long player_substep;
-volatile unsigned long player_substepinterval;
+volatile unsigned long player_substepinterval1;
+volatile unsigned long player_substepinterval2;
 volatile int player_step;
 volatile int player_pattern;
 volatile int player_cuedpattern;
@@ -144,7 +145,8 @@ ISR(TIMER3_COMPA_vect) {
 
   if (player_playing) {
     player_substep ++;
-    if (player_substep > player_substepinterval) {
+    int ssi = (player_step & 1) ? player_substepinterval2 : player_substepinterval1;
+    if (player_substep > ssi) {
   
       lfo_offset ++;
   
@@ -164,7 +166,9 @@ ISR(TIMER3_COMPA_vect) {
         // TODO: recalculate bpm -> substep interval
         // 60 bpm = ~1000
         // 120 bpm = ~500
-        player_substepinterval = (60000L) / (long)_song->tempo;
+        ssi = (60000L) / (long)_song->tempo;
+        player_substepinterval1 = ssi + (_song->shuffle * 50);
+        player_substepinterval2 = ssi - (_song->shuffle * 50);
   
         // figure out which pattern...
         if (player_cuedpattern != -1) {
@@ -219,7 +223,8 @@ void startTimers() {
   player_substep = 0;
   player_pattern = -1;
   player_cuedpattern = 0;
-  player_substepinterval = 1500;
+  player_substepinterval1 = 1500;
+  player_substepinterval2 = 1500;
 
   for(int i=0; i<256; i++) {
     noise_table[i] = rand() & 255;

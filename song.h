@@ -29,6 +29,7 @@ struct SONG {
   struct PATTERN patterns[MAX_PATTERNS];
   struct INSTRUMENT instruments[MAX_INSTRUMENTS];
   unsigned char tempo;
+  unsigned char shuffle;
   unsigned char dirty;
 };
 

@@ -53,7 +53,17 @@ void songeditor_input(int button, int repeat) {
       if (_song->tempo < 180) _song->tempo ++;
       _song->dirty = 1;
     }
+  } else if (songeditor_selection == 2) {
 
+    if (button == LEFT_BUTTON) {
+      if (_song->shuffle > 0) _song->shuffle --;
+      _song->dirty = 1;
+    }
+
+    if (button == RIGHT_BUTTON) {
+      if (_song->shuffle < 3) _song->shuffle ++;
+      _song->dirty = 1;
+    }
   }
 
   if (button == B_BUTTON && repeat == 0) {
@@ -65,7 +75,7 @@ void songeditor_input(int button, int repeat) {
   }
 
   if (button == DOWN_BUTTON && repeat == 0) {
-    if (songeditor_selection < 1) songeditor_selection ++;
+    if (songeditor_selection < 2) songeditor_selection ++;
   }
 }
 
@@ -79,10 +89,10 @@ void songeditor_render() {
     int bx = slidePosition(songeditor_s);
 
     _arduboy->fillRect(bx, 0, 128, 64, 0);
-    _arduboy->setCursor(bx + 20, 20);
+    _arduboy->setCursor(bx + 20, 10);
     _arduboy->print("SONG EDITOR");
 
-    _arduboy->setCursor(bx + 20, 35);
+    _arduboy->setCursor(bx + 20, 25);
     if (songeditor_selection == 0) {
       _arduboy->print(">PAT");
     } else {
@@ -94,28 +104,40 @@ void songeditor_render() {
       int x = bx + 60 + 20 * j;
 
       if ((j == player_pattern && (player_step & 3) == 0) || j == player_cuedpattern) {
-        _arduboy->drawRect(x-4, 31, 16, 16, 1);
+        _arduboy->drawRect(x-4, 21, 16, 16, 1);
       }
 
       if (j == songeditor_pattern) {
-        _arduboy->drawRect(x-2, 33, 12, 12, 1);
+        _arduboy->drawRect(x-2, 23, 12, 12, 1);
       }
 
-      _arduboy->setCursor(x, 35);
+      _arduboy->setCursor(x, 25);
 
       sprintf(buf, "%d", j);
       _arduboy->print(buf);
     }
 
-    _arduboy->setCursor(bx + 20, 50);
+    _arduboy->setCursor(bx + 20, 35);
     if (songeditor_selection == 1) {
       _arduboy->print(">BPM");
     } else {
       _arduboy->print(" BPM");
     }
 
-    _arduboy->setCursor(bx + 60, 50);
+    _arduboy->setCursor(bx + 60, 35);
     sprintf(buf, "%d", _song->tempo);
+    _arduboy->print(buf);
+
+
+    _arduboy->setCursor(bx + 20, 45);
+    if (songeditor_selection == 2) {
+      _arduboy->print(">SHF");
+    } else {
+      _arduboy->print(" SHF");
+    }
+
+    _arduboy->setCursor(bx + 60, 45);
+    sprintf(buf, "%d", _song->shuffle);
     _arduboy->print(buf);
   }
 }
