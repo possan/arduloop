@@ -9,13 +9,6 @@ extern volatile int player_cuedpattern;
 
 extern volatile int pwm_position;
 
-// extern int configvalue1;
-// extern int configvalue2;
-// extern int configvalue3;
-// extern int configvalue4;
-// extern int configvalue5;
-// extern int configvalue6;
-
 extern uint8_t sine_wave[245];
 
 extern volatile int phase;

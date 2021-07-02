@@ -25,8 +25,6 @@ struct PATTERN {
 };
 
 struct SONG {
-  // struct NOTE notes[64];
-  // unsigned char numnotes;
   int songlength;
   struct PATTERN patterns[MAX_PATTERNS];
   struct INSTRUMENT instruments[MAX_INSTRUMENTS];

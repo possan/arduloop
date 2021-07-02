@@ -60,24 +60,11 @@ Arduboy2 *_arduboy = &arduboy;
 long last_down_rep = 0;
 int last_down_repeat_counter = 0;
 
-// #define SHIFT 3
-
-// struct BALL {
-//   int x, y, dx, dy;
-//   int s;
-// };
-
-// #define NUMBALLS 8
-
-// struct BALL balls[NUMBALLS];
-
 void waitStart() {
   arduboy.clear();
 
   arduboy.drawBitmap(0, 0, __logo, 128, 64, WHITE);
 
-  // arduboy.setCursor(8, 24);
-  // arduboy.print("DRUMS");
   arduboy.setCursor(8, 32);
   arduboy.print("PRESS ANY KEY");
 
@@ -105,21 +92,6 @@ void setup()
   arduboy.setFrameRate(60);
   arduboy.display();
 
-
-
-
-  // for (int i = 0; i < NUMBALLS; i++) {
-  //   BALL *b = (BALL *)&balls[i];
-  //   b->x = rand() % 127;
-  //   b->y = rand() % 60;
-  //   int s = 1 + (rand() % 6);
-  //   b->s = i % 2;
-  //   b->x <<= SHIFT;
-  //   b->y <<= SHIFT;
-  //   b->dx = s * (-1 + ((rand() % 2) * 3));
-  //   b->dy = s * (-1 + ((rand() % 2) * 3));
-  // }
-
   clearSong();
   loadSong();
 
@@ -127,8 +99,6 @@ void setup()
   trackeditor_init();
   instrumenteditor_init();
   songeditor_init();
-
-  // waitStart();
 
   switchScreen(SCREEN_HOME, true);
   startTimers();
@@ -182,40 +152,6 @@ void loop()
     trackeditor_render();
     songeditor_render();
 
-    // arduboy.setCursor(0, rand() % 100);
-    // arduboy.print("Hello World!");
-
-    // int maxwidth = 128 << SHIFT;
-    // int maxheight = 64 << SHIFT;
-    // for (int i = 0; i < NUMBALLS; i++) {
-    //   BALL *b = (BALL *)&balls[i];
-    //   int x = b->x >> SHIFT;
-    //   int y = b->y >> SHIFT;
-    //   arduboy.fillRect(x - 1, y - 1, 3, 3, 0);
-    //   arduboy.drawPixel(x, y, 1);
-    //   if (b->s == 1) {
-    //     arduboy.drawPixel(x - 1, y, 1);
-    //     arduboy.drawPixel(x, y - 1, 1);
-    //     arduboy.drawPixel(x + 1, y, 1);
-    //     arduboy.drawPixel(x, y + 1, 1);
-    //   }
-
-    //   b->x += b->dx;
-    //   b->y += b->dy;
-    //   if (b->x > maxwidth) {
-    //     b->dx = -abs(b->dx);
-    //   }
-    //   if (b->y > maxheight) {
-    //     b->dy = -abs(b->dy);
-    //   }
-    //   if (b->x < 0) {
-    //     b->dx = abs(b->dx);
-    //   }
-    //   if (b->y < 0) {
-    //     b->dy = abs(b->dy);
-    //   }
-    // }
-
     arduboy.display();
   }
 
@@ -226,5 +162,3 @@ void loop()
   checkButton(A_BUTTON);
   checkButton(B_BUTTON);
 }
-
-
