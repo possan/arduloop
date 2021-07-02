@@ -30,6 +30,14 @@ void home_input(int button, int repeat) {
 
   if (button == B_BUTTON && repeat == 0) {
     switchScreen(SCREEN_HOME, false);
+
+    if (player_playing) {
+      player_playing = 0;
+    } else {
+      player_step = 15;
+      player_substep = player_substepinterval - 1;
+      player_playing = 1;
+    }
   }
 
   if (button == A_BUTTON && repeat == 0) {

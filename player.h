@@ -6,6 +6,7 @@ extern volatile unsigned long player_substep;
 extern volatile int player_step;
 extern volatile int player_pattern;
 extern volatile int player_cuedpattern;
+extern volatile int player_playing;
 
 extern volatile int pwm_position;
 

@@ -8,9 +8,13 @@ volatile unsigned long player_substepinterval;
 volatile int player_step;
 volatile int player_pattern;
 volatile int player_cuedpattern;
+volatile int player_playing;
 
+#define PIN_SYNC_OUT A5
 
 volatile int pwm_position = 0;
+
+volatile unsigned long lfo_offset = 0;
 
 // int configvalue1 = 24;
 // int configvalue2 = 8;
@@ -27,6 +31,7 @@ volatile long gen_counter = 0;
 
 volatile int shape = 0;
 volatile int pw = 0;
+volatile int pwdelta = 0;
 
 volatile long pitch_value = 0;
 volatile long pitch_target = 0;
@@ -78,10 +83,13 @@ volatile byte *_tunes_timer3_pin_port;
 volatile byte _tunes_timer3_pin_mask;
 volatile byte *_tunes_timer3_pin2_port;
 volatile byte _tunes_timer3_pin2_mask;
+volatile byte *_tunes_timer3_pin3_port;
+volatile byte _tunes_timer3_pin3_mask;
 
 
 
 
+volatile int sync_output = 0;
 
 // TIMER 3
 ISR(TIMER3_COMPA_vect) {
@@ -122,58 +130,82 @@ ISR(TIMER3_COMPA_vect) {
     *_tunes_timer3_pin2_port |= _tunes_timer3_pin2_mask;
   }
 
+  if (sync_output > 0) {
+    *_tunes_timer3_pin3_port |= _tunes_timer3_pin3_mask;
+    sync_output --;
+  } else {
+    *_tunes_timer3_pin3_port &= ~_tunes_timer3_pin3_mask;
+  }
+
   struct PATTERN *pat = NULL;
   if (player_pattern != -1) {
     pat = (struct PATTERN *)&_song->patterns[player_pattern];
   }
 
-  player_substep ++;
-  if (player_substep > player_substepinterval) {
-    player_substep = 0;
-
-    player_step ++;
-
-    int pattern_length = 16;
-    if (pat != NULL) {
-      pattern_length = pat->numnotes;
-    }
-
-    if (player_step >= pattern_length) {
-      player_step = 0;
-
-      // TODO: recalculate bpm -> substep interval
-      // 60 bpm = ~1000
-      // 120 bpm = ~500
-      player_substepinterval = (60000L) / (long)_song->tempo;
-
-      // figure out which pattern...
-      if (player_cuedpattern != -1) {
-        player_pattern = player_cuedpattern;
-        player_cuedpattern = -1;
+  if (player_playing) {
+    player_substep ++;
+    if (player_substep > player_substepinterval) {
+  
+      lfo_offset ++;
+  
+      
+      player_substep = 0;
+  
+      player_step ++;
+  
+      int pattern_length = 16;
+      if (pat != NULL) {
+        pattern_length = pat->numnotes;
       }
-    }
-
-    pat = NULL;
-    if (player_pattern != -1) {
-      pat = (struct PATTERN *)&_song->patterns[player_pattern];
-    }
-
-    if (pat != NULL) {
-      struct NOTE *note = (struct NOTE *)&pat->notes[player_step];
-
-      if (note->instrument != 0) {
-        struct INSTRUMENT *instrument = (struct INSTRUMENT *)&_song->instruments[note->instrument - 1];
-
-        gen_state = 1;
-        gen_counter = 20 * instrument->sustain;
-
-        pitch_value = instrument->freq;
-        pitch_target = instrument->freqchange;
-        pitch_delta = ((pitch_target - pitch_value) * 32768) / gen_counter;
-        pitch_value *= 32768;
-
-        shape = instrument->shape & 3;
-        pw = instrument->pw * 8;
+  
+      if (player_step >= pattern_length) {
+        player_step = 0;
+  
+        // TODO: recalculate bpm -> substep interval
+        // 60 bpm = ~1000
+        // 120 bpm = ~500
+        player_substepinterval = (60000L) / (long)_song->tempo;
+  
+        // figure out which pattern...
+        if (player_cuedpattern != -1) {
+          player_pattern = player_cuedpattern;
+          player_cuedpattern = -1;
+        }
+      }
+  
+      pat = NULL;
+      if (player_pattern != -1) {
+        pat = (struct PATTERN *)&_song->patterns[player_pattern];
+      }
+  
+      if (pat != NULL) {
+        struct NOTE *note = (struct NOTE *)&pat->notes[player_step];
+  
+        if (note->instrument != 0) {
+          struct INSTRUMENT *instrument = (struct INSTRUMENT *)&_song->instruments[note->instrument - 1];
+  
+          gen_state = 1;
+          gen_counter = 20 * instrument->sustain;
+  
+          pitch_value = instrument->freq;
+          pitch_target = instrument->freqchange;
+          pitch_delta = ((pitch_target - pitch_value) * 32768) / gen_counter;
+          pitch_value *= 32768;
+  
+          shape = instrument->shape & 3;
+          pw = instrument->pw * 8;
+          pwdelta = instrument->pwmotion;
+      
+          if (pwdelta > 0) {
+              pw += lfo_offset * pwdelta / 1;
+              pw %= 192;
+              pw += 8;
+          }  
+  
+          if ((player_step % 2) == 0) {
+            sync_output = 100;
+          }
+        }
       }
     }
   }
@@ -207,6 +239,11 @@ void startTimers() {
   pinMode(pin, OUTPUT);
   _tunes_timer3_pin2_port = portOutputRegister(digitalPinToPort(pin));
   _tunes_timer3_pin2_mask = digitalPinToBitMask(pin);
+
+  pin = PIN_SYNC_OUT;
+  pinMode(pin, OUTPUT);
+  _tunes_timer3_pin3_port = portOutputRegister(digitalPinToPort(pin));
+  _tunes_timer3_pin3_mask = digitalPinToBitMask(pin);
 
   unsigned long ocr;
   unsigned int frequency2;

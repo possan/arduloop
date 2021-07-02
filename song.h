@@ -14,7 +14,7 @@ struct INSTRUMENT {
   unsigned int freq;
   unsigned int freqchange;
   unsigned char pw;
-  signed char pwchange;
+  unsigned char pwmotion;
   unsigned char sustain;
   unsigned char shape;
 };

@@ -24,7 +24,7 @@ void clearSong() {
     in->freq = 12;
     in->freqchange = 12;
     in->pw = 16;
-    in->pwchange = 0;
+    in->pwmotion = 0;
     in->sustain = 32;
     in->shape = 0;
   }
@@ -56,5 +56,3 @@ void saveSong() {
     EEPROM.write(EEPROM_SONG_START + 1 + i, songptr[i]);
   }
 }
-
-

@@ -85,6 +85,11 @@ void instrumenteditor_input(int button, int repeat) {
         if (ins->pw > 0) ins->pw --; else ins->pw = 31;
         _song->dirty = 1;
       }
+
+      if (instrumenteditor_selection == 6) {
+        if (ins->pwmotion > 0) ins->pwmotion --; else ins->pwmotion = 31;
+        _song->dirty = 1;
+      }
     }
 
     if (button == RIGHT_BUTTON) {
@@ -110,6 +115,11 @@ void instrumenteditor_input(int button, int repeat) {
 
       if (instrumenteditor_selection == 5) {
         if (ins->pw < 31) ins->pw ++; else ins->pw = 0;
+        _song->dirty = 1;
+      }
+
+      if (instrumenteditor_selection == 6) {
+        if (ins->pwmotion < 31) ins->pwmotion ++; else ins->pwmotion = 0;
         _song->dirty = 1;
       }
     }
@@ -152,11 +162,12 @@ void instrumenteditor_render() {
     _arduboy->setCursor(bx, 0);
     _arduboy->print(buf);
 
-    drawbar(bx, "STA", ins->freq, 14, (instrumenteditor_selection == 1));
-    drawbar(bx, "END", ins->freqchange, 24, (instrumenteditor_selection == 2));
-    drawbar(bx, "SUS", ins->sustain, 34, (instrumenteditor_selection == 3));
-    drawbar(bx, "SHP", ins->shape * 10, 44, (instrumenteditor_selection == 4));
-    drawbar(bx, "PW",  ins->pw, 54, (instrumenteditor_selection == 5));
+    drawbar(bx, "STA", ins->freq, 12, (instrumenteditor_selection == 1));
+    drawbar(bx, "END", ins->freqchange, 20, (instrumenteditor_selection == 2));
+    drawbar(bx, "SUS", ins->sustain, 28, (instrumenteditor_selection == 3));
+    drawbar(bx, "SHP", ins->shape * 10, 36, (instrumenteditor_selection == 4));
+    drawbar(bx, "PW",  ins->pw, 44, (instrumenteditor_selection == 5));
+    drawbar(bx, "PLF", ins->pwmotion, 52, (instrumenteditor_selection == 6));
   }
 }
 
